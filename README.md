@@ -1,4 +1,4 @@
-### 1. Initial Setup for project
+### 1. Initial Setup for project for anime
 
 - **Push code to GitHub**  
   Push your project code to a GitHub repository.

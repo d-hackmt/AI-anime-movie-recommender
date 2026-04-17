@@ -1,258 +1,148 @@
-### 1. Initial Setup for project for anime
+# 🎬 AI-Powered Anime Movie Recommender
+### *Evaluation & Observability at Scale*
 
-- **Push code to GitHub**  
-  Push your project code to a GitHub repository.
-
-- **Create a Dockerfile**  
-  Write a `Dockerfile` in the root of your project to containerize the app.
-
-- **Create Kubernetes Deployemtn file**  
-  Make a file named 'llmops-k8s.yaml' 
-
-- **Create a VM Instance on Google Cloud**
-
-  - Go to VM Instances and click **"Create Instance"**
-  - Name: ``
-  - Machine Type:
-    - Series: `E2`
-    - Preset: `Standard`
-    - Memory: `16 GB RAM`
-  - Boot Disk:
-    - Change size to `256 GB`
-    - Image: Select **Ubuntu 24.04 LTS**
-  - Networking:
-    - Enable HTTP and HTTPS traffic
-
-- **Create the Instance**
-
-- **Connect to the VM**
-  - Use the **SSH** option provided to connect to the VM from the browser.
-
-
-
-### 2. Configure VM Instance
-
-- **Clone your GitHub repo**
-
-  ```bash
-  git clone https://github.com/data-guru0/TESTING-9.git
-  ls
-  cd TESTING-9
-  ls  # You should see the contents of your project
-  ```
-
-- **Install Docker**
-
-  - Search: "Install Docker on Ubuntu"
-  - Open the first official Docker website (docs.docker.com)
-  - Scroll down and copy the **first big command block** and paste into your VM terminal
-  - Then copy and paste the **second command block**
-  - Then run the **third command** to test Docker:
-
-    ```bash
-    docker run hello-world
-    ```
-
-- **Run Docker without sudo**
-
-  - On the same page, scroll to: **"Post-installation steps for Linux"**
-  - Paste all 4 commands one by one to allow Docker without `sudo`
-  - Last command is for testing
-
-- **Enable Docker to start on boot**
-
-  - On the same page, scroll down to: **"Configure Docker to start on boot"**
-  - Copy and paste the command block (2 commands):
-
-    ```bash
-    sudo systemctl enable docker.service
-    sudo systemctl enable containerd.service
-    ```
-
-- **Verify Docker Setup**
-
-  ```bash
-  systemctl status docker       # You should see "active (running)"
-  docker ps                     # No container should be running
-  docker ps -a                 # Should show "hello-world" exited container
-  ```
-
-
-### 3. Configure Minikube inside VM
-
-- **Install Minikube**
-
-  - Open browser and search: `Install Minikube`
-  - Open the first official site (minikube.sigs.k8s.io) with `minikube start` on it
-  - Choose:
-    - **OS:** Linux
-    - **Architecture:** *x86*
-    - Select **Binary download**
-  - Reminder: You have already done this on Windows, so you're familiar with how Minikube works
-
-- **Install Minikube Binary on VM**
-
-  - Copy and paste the installation commands from the website into your VM terminal
-
-- **Start Minikube Cluster**
-
-  ```bash
-  minikube start
-  ```
-
-  - This uses Docker internally, which is why Docker was installed first
-
-- **Install kubectl**
-
-  - Search: `Install kubectl`
-  - Run the first command with `curl` from the official Kubernetes docs
-  - Run the second command to validate the download
-  - Instead of installing manually, go to the **Snap section** (below on the same page)
-
-  ```bash
-  sudo snap install kubectl --classic
-  ```
-
-  - Verify installation:
-
-    ```bash
-    kubectl version --client
-    ```
-
-- **Check Minikube Status**
-
-  ```bash
-  minikube status         # Should show all components running
-  kubectl get nodes       # Should show minikube node
-  kubectl cluster-info    # Cluster info
-  docker ps               # Minikube container should be running
-  ```
-
-### 4. Interlink your Github on VSCode and on VM
-
-```bash
-git config --global user.email "gyrogodnon@gmail.com"
-git config --global user.name "data-guru0"
-
-git add .
-git commit -m "commit"
-git push origin main
-```
-
-- When prompted:
-  - **Username**: `data-guru0`
-  - **Password**: GitHub token (paste, it's invisible)
+Welcome to the **AI-Powered Anime Movie Recommender**! This isn't just another recommendation engine; it’s a full-stack LLM application built with a focus on **reliability**, **observability**, and **scientific evaluation**.
 
 ---
 
+## 🚀 The Vision
+Finding the next anime to binge shouldn't feel like a chore. Our system leverages Retrieval-Augmented Generation (RAG) to understand your preferences deeply and suggest titles from a curated database, while ensuring every recommendation is backed by data and tracked for quality.
 
-### 5. Build and Deploy your APP on VM
+---
 
-```bash
-## Point Docker to Minikube
-eval $(minikube docker-env)
+## 🛠️ Tech Stack
 
-docker build -t llmops-app:latest .
+Built with the modern AI engineer's toolkit:
 
-kubectl create secret generic llmops-secrets \
-  --from-literal=GROQ_API_KEY="" \
-  --from-literal=HUGGINGFACEHUB_API_TOKEN=""
+| Category | Technology Used |
+| :--- | :--- |
+| **Brain (LLM)** | [Groq (Llama 3)](https://groq.com/) |
+| **Orchestration** | [LangChain](https://www.langchain.com/) |
+| **Memory (Vector DB)** | [ChromaDB](https://www.trychroma.com/) |
+| **Visuals (Frontend)** | [Streamlit](https://streamlit.io/) |
+| **Observability** | [LangSmith](https://www.langchain.com/langsmith) |
+| **Infrastructure** | **Docker** & **Kubernetes (Minikube)** |
+| **Cloud Platform** | **Google Cloud Platform (GCP)** |
+| **Cloud Monitoring** | **Grafana Cloud** |
 
-kubectl apply -f llmops-k8s.yaml
+---
 
+## 📐 System Architecture
 
-kubectl get pods
+Our RAG-based architecture ensures that recommendations are grounded in actual anime data, preventing "hallucinations" and providing relevant context.
 
-### U will see pods runiing
-
-
-# Do minikube tunnel on one terminal
-
-minikube tunnel
-
-
-# Open another terminal
-
-kubectl port-forward svc/llmops-service 8501:80 --address 0.0.0.0
-
-## Now copy external ip and :8501 and see ur app there....
-
-
+```mermaid
+graph TD
+    User([User Profile/Query]) --> Streamlit[Streamlit UI]
+    Streamlit --> Controller[LangChain Controller]
+    
+    subgraph RAG Pipeline
+        Controller --> Embed[HuggingFace Embeddings]
+        Embed --> VectorStore[(ChromaDB)]
+        VectorStore --> Docs[Relevant Anime Docs]
+    end
+    
+    Docs --> Groq[Groq Llama 3]
+    Groq --> Response[Personalized Recommendation]
+    Response --> Streamlit
+    
+    subgraph Observability
+    direction TB
+        Controller -.-> LangSmith{LangSmith Tracing}
+        Groq -.-> LangSmith
+    end
 ```
 
-### 6. GRAFANA CLOUD MONITORING
+---
 
-```bash
-## Open another VM terminal for Grfana cloud
+## 🏗️ Deployment & Infrastructure
 
-kubectl create ns monitoring
+We follow a professional **Development to Production** workflow, moving from local environments to a robust cloud infrastructure on GCP.
 
-kubectl get ns
+### 🏠 Local Development
+Running locally is straightforward:
+1.  **Environment**: Python 3.10+
+2.  **Run**: `streamlit run app/main.py`
+3.  **Docker**: `docker build -t anime-recommender .`
 
-## Make account on Grfaana cloud
+### ☁️ Cloud Production (GCP + K8s)
+Our production environment is hosted on **Google Cloud Platform** using a containerized approach managed by **Kubernetes**.
 
-### Install HELM - Search on Google
--- Copy commands from script section..
--- U will get 3 commands
+```mermaid
+graph LR
+    subgraph Local Dev
+        Code[Source Code] --> Docker[Docker Image]
+    end
 
+    subgraph Google Cloud Platform
+        VM[GCP Compute Engine VM]
+        
+        subgraph Kubernetes Cluster
+            Docker -.-> K8s[Minikube / K8s Pods]
+            K8s --> Service[K8s Service]
+        end
+    end
 
-## Come to grafana cloud --> Left pane observability --> Kubernetes--> start sending data
-## In backend installation --> Hit install
-## Give your clustername and namespace there : minikube and monitoring in our case
-## Select kubernetes
-## Keep other things on as default
-## Here only create new access token give name lets give minikube-token & Create it and save it somewhere..
-## Select helm and deploy helm charts is already generated...
+    subgraph Monitoring Edge
+        K8s -.-> Grafana[Grafana Cloud]
+        K8s -.-> LangSmith[LangSmith]
+    end
 
-
-
-## Come to terminal --> Create a file
-vi values.yaml
-
-
-## Paste all from there to your file now remove last EOF part & and also initial part save that initial part we need it..
-
-Example : 
-
-helm repo add grafana https://grafana.github.io/helm-charts &&
-  helm repo update &&
-  helm upgrade --install --atomic --timeout 300s grafana-k8s-monitoring grafana/k8s-monitoring \
-    --namespace "monitoring" --create-namespace --values - <<'EOF'
-
-### Remove this above intial part and save it somewhere
-
-Then Esc+wq! amd save the file
-
-
-## Now use the copied command just make some modification:
-Remove that EOF part and instead write
---values values.yaml
-
-Example:
-
-helm repo add grafana https://grafana.github.io/helm-charts &&
-  helm repo update &&
-  helm upgrade --install --atomic --timeout 300s grafana-k8s-monitoring grafana/k8s-monitoring \
-    --namespace "monitoring" --create-namespace --values values.yaml
-
-## Paste this command on VM u will get status deployed revision 1
-## It means it was a SUCESS
-
-To check:
-
-kubectl get pods -n monitoring
-
-# These are all should be running.....
-
-Go to grafana cloud again..
-And below u will get go to homepage click it..
-Just refresh the page and boom..
-
-
-Now u can see metrics related to your kubernetes cluster..
-
----Explore it for yourself now 
-
----Make sure to do cleanup 
-
+    User((User)) --> Service
 ```
+
+-   **Orchestration**: We use **Minikube** inside a GCP VM to manage our Kubernetes pods, ensuring high availability and scalability.
+-   **Security**: API keys and tokens are managed via **Kubernetes Secrets**.
+-   **Observability**: Real-time cluster metrics are streamed to **Grafana Cloud** for deep infrastructure monitoring.
+
+---
+
+## 🧪 Evaluation Workflow
+
+We believe in **"What gets measured, gets improved."** Our evaluation pipeline runs systematically to ensure the AI's logic remains sharp.
+
+```mermaid
+sequenceDiagram
+    participant D as Dataset (Golden Sets)
+    participant A as AI Recommender
+    participant LS as LangSmith (Evaluation)
+    participant E as Expert Reviewer (LLM-as-a-Judge)
+
+    D->>A: Sample Query
+    A->>LS: Trace & Prediction
+    LS->>E: Compare Pred vs Ground Truth
+    E->>LS: Quality Score (0-1)
+    LS->>D: Update Performance Metrics
+```
+
+---
+
+## 🔍 Why LangSmith? (The "Magic" Mirror)
+
+Building with LLMs can often feel like working inside a dark room. You send a prompt, and a response comes back—but *why*? 
+
+**LangSmith** is our high-powered flashlight. We use it for:
+1.  **Debugging the Black Box**: See every step of the chain, from the raw prompt to the retrieved documents.
+2.  **Performance Metrics**: Track latency, token usage, and cost in real-time.
+3.  **Regression Testing**: When we change a prompt, LangSmith tells us immediately if the quality dropped or improved.
+4.  **Dataset Management**: Turn problematic user queries into test cases with a single click.
+
+*Without observability, you're just guessing. With LangSmith, you're engineering.*
+
+---
+
+## 📚 Deep Dive Documentation
+
+Hungry for more? We have extensive documentation covering every aspect of this project.
+
+> [!TIP]
+> 📖 You'll find in-depth docs here: [DOCS/](file:///c:/Users/djadh/Downloads/Anime_Evals-main/DOCS)
+
+### Navigation Guide:
+- 🏗️ **[Architecture Overview](file:///c:/Users/djadh/Downloads/Anime_Evals-main/DOCS/01_introduction_and_architecture.md)**: How the gears turn.
+- 🧪 **[Evaluation Framework](file:///c:/Users/djadh/Downloads/Anime_Evals-main/DOCS/03_evaluation_framework.md)**: How we measure quality.
+- 📡 **[Observability Details](file:///c:/Users/djadh/Downloads/Anime_Evals-main/DOCS/04_observability_and_tracing.md)**: Deep dive into LangSmith integration.
+- ☁️ **[Deployment Guide](file:///c:/Users/djadh/Downloads/Anime_Evals-main/DOCS/09-CLOUD%20DEPLOYMENTT.md)**: Full walkthrough for GCP, Docker, and K8s.
+
+---
+*Made with ❤️ for the Anime Community.*

@@ -27,6 +27,32 @@ Built with the modern AI engineer's toolkit:
 
 ---
 
+## 📂 Code Structure
+
+Our repository is organized into distinct modules for frontend, pipeline, and core logic:
+
+```bash
+Anime_Evals-main/
+├── app/                    # 🎨 Streamlit Web Application
+│   ├── app.py              # Main dashboard script
+│   └── app2.py             # Advanced UI components
+├── pipeline/               # ⚡ RAG Pipeline Orchestration
+│   ├── build_pipeline.py   # Factory for building LLM chains
+│   └── pipeline.py         # Main execution logic
+├── src/                    # 🧠 Core Intelligence
+│   ├── recommender.py     # Main recommendation engine
+│   ├── evaluation.py      # LLM-as-a-Judge logic
+│   ├── vector_store.py    # ChromaDB integration
+│   └── prompt_template.py # Master prompt repository
+├── DOCS/                   # 📚 In-depth Documentation
+├── data/                   # 📊 Raw Anime Datasets
+├── chroma_db/              # 🗄️ Local Vector Storage
+├── Dockefile               # 🐋 Container specification
+└── llmops-k8s.yaml        # ☸️ Kubernetes deployment
+```
+
+---
+
 ## 📐 System Architecture
 
 Our RAG-based architecture ensures that recommendations are grounded in actual anime data, preventing "hallucinations" and providing relevant context.
